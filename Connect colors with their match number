@@ -1,0 +1,165 @@
+
+#include <iostream>
+#include <map>
+#include <string>
+#include <cmath>
+#include <iomanip>
+// Condition to have more upward??¿¿¿???
+using namespace std;
+
+class myGame {
+  map<string, int> myMap;
+  map<string, int> Slope;
+
+public:
+  // my map array
+  myGame() {
+    myMap.insert(pair<string, int>("Red", 0));
+    myMap.insert(pair<string, int>("Blue", 0));
+    myMap.insert(pair<string, int>("Green", 0));
+    myMap.insert(pair<string, int>("Yellow", 0));
+    myMap.insert(pair<string, int>("Purple", 0));
+
+    // Slope map for storing the position of the colors
+    Slope.insert(pair<string, int>("Red", 5)); // Getting the slope
+    Slope.insert(pair<string, int>("Blue", 4));
+    Slope.insert(pair<string, int>("Green", 3));
+    Slope.insert(pair<string, int>("Yellow", 2));
+    Slope.insert(pair<string, int>("Purple", 1));
+  }
+
+  bool rule1() {
+    return myMap["Blue"] > myMap["Red"] ? true : false;
+  } // check blue
+
+  bool rule2() { // purple not as blue and red
+    if (myMap["Purple"] != myMap["Blue"] && myMap["Purple"] != myMap["Red"])
+      return true;
+    return false;
+  }
+
+  bool rule3() { // check green is not other nums
+    if (myMap["Green"] != myMap["Red"] && (myMap["Green"] != myMap["Blue"]) &&
+        (myMap["Green"] != myMap["Purple"]))
+      return true;
+    return false;
+  }
+
+  bool rule4() { // green cross 1 num
+    int countCross = 0;
+    if (myMap["Blue"] < myMap["Green"])
+      countCross++;
+    if (myMap["Red"] < myMap["Green"])
+      countCross++;
+    if (myMap["Purple"] > myMap["Green"])
+      countCross++;
+    // Yello will never be greater than green so we dont check that
+    return countCross == 1 ? true : false;
+  }
+
+  bool rule5() { // yellow less than green
+    if (myMap["Yellow"] < myMap["Green"])
+      return true;
+    return false;
+  }
+
+  bool rule6() { // Yellow is not same as other nums
+    if (myMap["Yellow"] != myMap["Blue"] && myMap["Yellow"] != myMap["Red"] &&
+        myMap["Yellow"] != myMap["Purple"])
+      return true;
+    return false;
+  }
+
+  bool rule7() {
+    int Negative = 0;
+    int positive = 0;
+    int slop = 0;
+    slop = myMap["Red"] - Slope["Red"]; // Slope red
+    slop <= 0 ? Negative++ : positive++;
+
+    slop = myMap["Blue"] - Slope["Blue"]; // slope Blue
+    slop <= 0 ? Negative++ : positive++;
+
+    slop = myMap["Purple"] - Slope["Purple"]; // purple
+    slop <= 0 ? Negative++ : positive++;
+
+    slop = myMap["Green"] - Slope["Green"]; // green
+    slop <= 0 ? Negative++ : positive++;
+
+    slop = myMap["Yellow"] - Slope["Yellow"];
+    slop <= 0 ? Negative++ : positive++;
+    return Negative < positive ? true : false;
+  }
+
+  void getSolution() {
+
+    // int SIZE = 5;
+    //                  1        2         3      4      5
+    // string colurs[5] ={"Purple","Yello","Green","Blue","Red"};
+    // int nums[5];
+    // array to store the slopes
+
+    bool solved = false;
+    for (int red = 3; red >= 1; red -= 2) { // Checking red  with odd numbers
+      myMap["Red"] = red;
+
+      for (int blue = 5; blue >= 1; blue--) {
+        myMap["Blue"] = blue;
+        if (rule1()) { // check blue
+
+          for (int purple = 5; purple >= 3; purple--) { // Check purple
+            myMap["Purple"] = purple;
+            if (rule2()) {
+
+              for (int green = 4; green >= 2; green--) {
+                myMap["Green"] = green;
+                if (rule3() &&
+                    rule4()) { // green cross 1 num and not same as other nums
+
+                  for (int yellow = 5; yellow >= 1; yellow--) {
+                    myMap["Yellow"] = yellow;
+                    if (rule5() && rule6()) {
+
+                      if (rule7()) { // more upwards than doenward
+                        solved = true;
+                        break;
+                      }
+                    }
+                    if (solved)
+                      break;
+                  }
+                }
+                if (solved)
+                  break;
+              }
+            }
+            if (solved)
+              break;
+          }
+        }
+        if (solved)
+          break;
+      }
+      if (solved)
+        break;
+    }
+
+    if (solved)
+      display();
+  }
+
+  void display() {
+    map<string, int>::iterator it;
+    for (it = myMap.begin(); it != myMap.end(); it++) {
+      cout << left<< setw(6) << it->first << " ----> " << it->second << endl;
+    }
+  }
+};
+
+int main() {
+
+  myGame mg;
+  mg.getSolution();
+
+  return 0;
+}
